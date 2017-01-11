@@ -14,8 +14,6 @@
 
 namespace Lib\Cli;
 
-use Lib;
-
 /**
  * Lib\Cli\Make Class
  *

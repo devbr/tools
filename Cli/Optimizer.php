@@ -14,7 +14,7 @@
 
 namespace Lib\Cli;
 
-use Lib;
+use Config\Lib\Cli;
 
 /**
  * Lib\Cli\Optimizer Class
@@ -42,7 +42,7 @@ class Optimizer
         $arg = null
     ) {
     
-        $this->config = \Config\Lib\Cli\Optimizer::this();
+        $this->config = Cli\Optimizer::this();
         $this->cmd = strtolower($cmd);
         $this->arg = $arg;
     }
