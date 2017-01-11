@@ -14,6 +14,8 @@
 
 namespace Lib\Cli;
 
+use Lib;
+
 /**
  * Lib\Cli\Key Class
  *
