@@ -29,7 +29,9 @@ class Optimizer
 {
     private $config = null;
     private $cmd    = null;
+    private $subCmd = false;
     private $arg    = null;
+    private $yuicompressor = null;
 
 
     /**
@@ -45,6 +47,7 @@ class Optimizer
         $this->config = Cli\Optimizer::this();
         $this->cmd = strtolower($cmd);
         $this->arg = $arg;
+        $this->yuicompressor = __DIR__.'/yc.jar';
     }
 
     /**
@@ -54,11 +57,16 @@ class Optimizer
      */
     function run()
     {
-        switch ($this->cmd) {
-            case 'scan':
-                $this->cmdScan();
-                break;
+        if (strpos($this->cmd, ':') !== false) {
+            $tmp = explode(':', $this->cmd);
+            $this->cmd = $tmp[0];
+            $this->subCmd = $tmp[1];
+        } else {
+            $this->subCmd = false;
+        }
 
+        //Select
+        switch ($this->cmd) {
             case 'css':
                 $this->cmdCss();
                 break;
@@ -79,55 +87,70 @@ class Optimizer
         return;
     }
 
+
     /**
-     * Command SCAN
-     *
-     * @return array File list in source CSS/JS
+     * [cmdCss description]
+     * @return [type] [description]
      */
-    private function cmdScan()
-    {
-        $css = $this->config->get('css');
-        $a['css'] = $this->searchFile($css->path.$css->source);
-
-        $js = $this->config->get('js');
-        $a['js'] = $this->searchFile($js->path.$js->source);
-
-        //Search for "SAVE"
-        if (isset($this->arg[0]) && $this->arg[0] == 'save') {
-            $name = 'default';
-
-            //Search for "NAME"
-            if (isset($this->arg[1])
-                && is_string($this->arg[1])
-                && $this->arg[1] != '') {
-                $name = $this->arg[1];
-            }
-
-            $pj = $this->config->get('cssPack');
-            $pj->$name = $a['css'];
-            $this->config->set('cssPack', $pj);
-
-            $pc = $this->config->get('jsPack');
-            $pc->$name = $a['js'];
-            $this->config->set('jsPack', $pc);
-
-            $this->config->save();
-
-            echo "\n -- Config file saved as \"$name\"!";
-        }
-        echo "\n".print_r($a, true);
-    }
-
     private function cmdCss()
     {
         echo "\n - CSS -\n";
+
+        if ($css = $this->config->get('css')) {
+            if (!$this->subCmd) {
+                foreach ($css as $k => $v) {
+                    echo "\n - $k:\n";
+                    $this->minify($v->filename, $v->add, $this->yuicompressor, $this->config->baseDir);
+                }
+                return;
+            }
+
+            if (isset($css->{$this->subCmd})) {
+                echo "\n - ".$this->subCmd."\n";
+                $this->minify($css->{$this->subCmd}->filename,
+                              $css->{$this->subCmd}->add,
+                              $this->yuicompressor,
+                              $this->config->baseDir);
+            } else {
+                echo "\n Err: Not found!\n";
+                return;
+            }
+        }
     }
 
+    /**
+     * [cmdJs description]
+     * @return [type] [description]
+     */
     private function cmdJs()
     {
         echo "\n - JS -\n";
+        if ($js = $this->config->get('js')) {
+            if (!$this->subCmd) {
+                foreach ($js as $k => $v) {
+                    echo "\n - $k:\n";
+                    $this->minify($v->filename, $v->add, $this->yuicompressor, $this->config->baseDir);
+                }
+                return;
+            }
+
+            if (isset($js->{$this->subCmd})) {
+                echo "\n - ".$this->subCmd."\n";
+                $this->minify($js->{$this->subCmd}->filename,
+                              $js->{$this->subCmd}->add,
+                              $this->yuicompressor,
+                              $this->config->baseDir);
+            } else {
+                echo "\n Err: Not found!\n";
+                return;
+            }
+        }
     }
 
+    /**
+     * [cmdAll description]
+     * @return [type] [description]
+     */
     private function cmdAll()
     {
         $this->cmdCss();
@@ -136,72 +159,42 @@ class Optimizer
 
     // ----------------------------------------------------------------------
 
-    private function compressAndSaveCss()
+    /**
+     * Minifier
+     * @param  string $filename      Path to save
+     * @param  array  $files         Array of files
+     * @param  string $yuicompressor Path of java YuiComporessor
+     * @param  string $baseDir       Path of base directory
+     * @return void                void
+     */
+    private function minify($filename, $files, $yuicompressor, $baseDir)
     {
-        //echo "\n -- ".$this->config->get('sourcePath');
-        echo "\n -- ".print_r($this->searchCssSources('home', true), true);
-        echo "\n -- ".print_r($this->searchJsSources(null, true), true);
-        exit("\n\n  -- ok");
-    }
+        $content = '';
 
-
-    private function compressAndSaveJs()
-    {
-        echo "\n -- ".$this->config->get('sourcePath');
-        exit("\n\n  -- ok");
-    }
-
-
-    private function searchCssSources(
-        string $pack = null,
-        bool $save = false
-    ) {
-    
-        $pack = $pack == null ? 'default' : $pack;
-        $css = $this->config->get('css');
-        $in = $this->config->get('cssPack'); //exit(print_r($this->config));
-
-        $in->$pack = $this->searchFile($css->path.$css->source);
-
-        if ($save) {
-            $this->config->set('cssPack', $in);
-            $this->config->save();
-        }
-
-        return $in;
-    }
-
-    private function searchFile($dir)
-    {
-        $dir = scandir($dir, 1);
-        $o = [];
-
-        foreach ($dir as $n => $f) {
-            if ($f == '.' || $f == '..') {
-                continue;
+        foreach ($files as $file) {
+            if (file_exists($baseDir.$file)) {
+                $result = file_get_contents($baseDir.$file);
+                $content .= "\n/* - $file - */\n$result\n";
+                echo "\n    Add: $file";
+            } else {
+                echo "\n    Err: $file - not found.";
             }
-            $o[$n] = $f;
+        }
+        echo "\n Saving: $filename\n";
+
+        if (strpos($filename, '.js') !== false) {
+            $filenamex = $filename.'mx.js';
+        }
+        if (strpos($filename, '.css') !== false) {
+            $filenamex = $filename.'mx.css';
         }
 
-        return $o;
-    }
-
-    private function searchJsSources(
-        string $pack = null,
-        bool $save = false
-    ) {
-    
-        $pack = $pack == null ? 'default' : $pack;
-        $js = $this->config->get('js');
-        $in = $this->config->get('jsPack');
-
-        $in->$pack = $this->searchFile($js->path.$js->source);
-
-        if ($save) {
-            $this->config->set('jsPack', $in);
-            $this->config->save();
-        }
-
-        return $in;
+        file_put_contents($baseDir.$filenamex, $content);
+        echo "\n Minified ..";
+        file_put_contents($baseDir.$filename,
+                            exec('java -jar '.$yuicompressor.' "'.$baseDir.$filenamex.'"'));
+        echo ".....";
+        unlink($baseDir.$filenamex);
+        echo "....\n";
     }
 }
