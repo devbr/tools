@@ -25,22 +25,11 @@ namespace Config\Lib\Cli;
  */
 class Optimizer
 {
-    private $css = ['path'=>'',
-                    'source'=>'source/',
-                    'bkp'=>'bkp/',
-                    'file'=>'all.css'];
+    public $baseDir = null;
+    private $css = null;
+    private $js = null;
 
-    private $cssPack = ['default'=>[]];
-
-    private $js = ['path'=>'',
-                    'source'=>'source/',
-                    'bkp'=>'bkp/',
-                    'file'=>'all.js'];
-
-    private $jsPack = ['default'=>[]];
-
-
-    private static $jsonFile = false;
+    private static $configFile = false;
     private static $node = false;
 
     /**
@@ -50,15 +39,16 @@ class Optimizer
     function __construct(string $file = null)
     {
         if ($file == null) {
-            $file = static::$jsonFile;
+            $file = static::$configFile;
         }
         if ($file == false) {
-            static::$jsonFile = __DIR__.'/'.pathinfo(__FILE__, PATHINFO_FILENAME).'.json';
-            $file = static::$jsonFile;
+            static::$configFile = __DIR__.'/'.pathinfo(__FILE__, PATHINFO_FILENAME).'.json';
+            $file = static::$configFile;
 
             if (defined('_WWW')) {
-                $this->css['path'] = _WWW.'css/';
-                $this->js['path'] = _WWW.'js/';
+                $this->baseDir = _WWW;
+            } else {
+                $this->baseDir = dirname(dirname(dirname(dirname(__DIR__)))).'/';
             }
         }
 
@@ -114,7 +104,7 @@ class Optimizer
     function save(string $file = null)
     {
         if ($file == null) {
-            $file = static::$jsonFile;
+            $file = static::$configFile;
         }
 
         $a = null;
@@ -132,16 +122,22 @@ class Optimizer
     function load(string $file = null)
     {
         if ($file == null) {
-            $file = static::$jsonFile;
+            $file = static::$configFile;
         }
         if (!file_exists($file)) {
             return false;
         }
 
         $a = json_decode(file_get_contents($file));
-        foreach ($a as $k => $v) {
-            $this->$k = $v;
+
+        if (isset($a->css)) {
+            $this->css = $a->css;
         }
+
+        if (isset($a->js)) {
+            $this->js = $a->js;
+        }
+        
         return true;
     }
 }
