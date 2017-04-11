@@ -15,7 +15,7 @@
 namespace Lib;
 
 use Lib;
-use Config\Resource;
+use Config\Lib\Resource;
 
 /**
  * App Class

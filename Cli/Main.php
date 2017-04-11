@@ -138,13 +138,51 @@ class Main
             return false;
         }
 
-        @mkdir($dir, $perm, true);
-        @chmod($dir, $perm);
+            @mkdir($dir, $perm, true);
+            @chmod($dir, $perm);
 
         if (is_writable($dir)) {
             return true;
         }
-        return false;
+            return false;
+    }
+
+    /**
+     * Copy entire content of the $dir[ectory]
+     * @param  string $dir    Origin
+     * @param  string $target Destination
+     * @return bool         True/false success
+     */
+    static function copyDirectoryContents($dir, $target)
+    {
+        $dir = rtrim($dir, "\\/ ").'/';
+        $target = rtrim($target, "\\/ ").'/';
+
+        if (!static::checkAndOrCreateDir($target, true, 0777)) {
+            return "ERROR: can't create directory '$taget'!";
+        }
+
+        foreach (scandir($dir) as $file) {
+            if ($file == '.' || $file == '..') {
+                continue;
+            }
+
+            if (is_dir($dir.$file)) {
+                if (!static::checkAndOrCreateDir($target.$file, true, 0777)) {
+                    return "ERROR: can't create directory '$taget$file'!";
+                } else {
+                    $copy = static::copyDirectoryContents($dir.$file, $target.$file);
+                    if ($copy !== true) {
+                        return $copy;
+                    }
+                }
+            } elseif (is_file($dir.$file)) {
+                if (!copy($dir.$file, $target.$file)) {
+                    echo "\n ERROR: can't copy '$target$file'!";
+                }
+            }
+        }
+        return true;
     }
 
     /**
