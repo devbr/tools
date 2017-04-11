@@ -43,7 +43,7 @@ class Key
     
         $this->cmd = strtolower($cmd);
         $this->arg = $arg;
-        $this->configKeyPath = (defined('_CONFIG') ? _CONFIG : dirname(__DIR__, 4).'/Config/').'Key/';
+        $this->configKeyPath = (defined('_CONFIG') ? _CONFIG : dirname(__DIR__, 4).'/Config/').'Lib/Key/';
     }
 
     /**
