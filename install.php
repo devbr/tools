@@ -1,54 +1,25 @@
 <?php
-if (php_sapi_name() !== 'cli') {
-    exit('It\'s no cli!');
+
+if (php_sapi_name() !== 'cli' || !defined('_CONFIG')) {
+    exit("\n\tI can not run out of system!\n");
 }
 
-//Configurations - you can change...
-$name = 'Tools';
-$file = 'Lib/Cli/Optimizer.php';
-$configPath = defined('_CONFIG') ? _CONFIG : dirname(dirname(dirname(__DIR__))).'/Config/';
+$thisConfig = __DIR__.'/Config/';
 
-//Checkin
-if (is_file($configPath.$file)) {
-    return "\n  - $name configuration file already exists!";
-}
-if (!is_dir($configPath)) {
-    return "\n\n  - Configuration file for $name not instaled!\n\n";
+if (!is_dir($thisConfig)) {
+    return;
 }
 
-//Gravando o arquivo de configuração no CONFIG da aplicação
-if (!checkAndOrCreateDir(dirname($configPath.$file), true)) {
-    return "\n  - Without permission to create or write \"$configPath$file\"!\n\n";
-}
-file_put_contents($configPath.$file,
-    file_get_contents(__DIR__.'/Cli/config.php'));
+$namespace = @json_decode(file_get_contents(__DIR__.'/composer.json'))->name;
+/* OPTIONAL
+ * load composer.json and get the "name" of pack 
+ * $appConfig = _CONFIG.$namespace;
+ */
+ 
+$appConfig = _CONFIG;
+
+//Coping all files (and directorys) in /Config
+$copy = \Lib\Cli\Main::copyDirectoryContents($thisConfig, $appConfig);
 
 //Return to application installer
-return "\n  - $name instaled!";
-
-
-
-/**
- * Check or create a directory
- * @param  string  $dir    path of the directory
- * @param  boolean $create False/true for create
- * @param  string  $perm   indiucates a permission - default 0777
- *
- * @return bool          status of directory (exists/created = false or true)
- */
-function checkAndOrCreateDir($dir, $create = false, $perm = '0777')
-{
-    if (is_dir($dir) && is_writable($dir)) {
-        return true;
-    } elseif ($create === false) {
-        return false;
-    }
-
-    @mkdir($dir, $perm, true);
-    @chmod($dir, $perm);
-
-    if (is_writable($dir)) {
-        return true;
-    }
-    return false;
-}
+return "\n---".($copy === true ? " $namespace instaled!" : $copy);

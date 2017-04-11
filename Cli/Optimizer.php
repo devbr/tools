@@ -65,7 +65,7 @@ class Optimizer
             $this->subCmd = false;
         }
 
-        //Select
+            //Select
         switch ($this->cmd) {
             case 'css':
                 $this->cmdCss();
@@ -82,9 +82,9 @@ class Optimizer
             default:
                 echo "\n\n  Command \"optimize:".$this->cmd."\" not exists!";
                 exit(Main::help());
-                break;
+            break;
         }
-        return;
+            return;
     }
 
 
@@ -108,9 +108,9 @@ class Optimizer
             if (isset($css->{$this->subCmd})) {
                 echo "\n - ".$this->subCmd."\n";
                 $this->minify($css->{$this->subCmd}->filename,
-                              $css->{$this->subCmd}->add,
-                              $this->yuicompressor,
-                              $this->config->baseDir);
+                  $css->{$this->subCmd}->add,
+                  $this->yuicompressor,
+                  $this->config->baseDir);
             } else {
                 echo "\n Err: Not found!\n";
                 return;
@@ -137,9 +137,9 @@ class Optimizer
             if (isset($js->{$this->subCmd})) {
                 echo "\n - ".$this->subCmd."\n";
                 $this->minify($js->{$this->subCmd}->filename,
-                              $js->{$this->subCmd}->add,
-                              $this->yuicompressor,
-                              $this->config->baseDir);
+                  $js->{$this->subCmd}->add,
+                  $this->yuicompressor,
+                  $this->config->baseDir);
             } else {
                 echo "\n Err: Not found!\n";
                 return;
@@ -173,8 +173,8 @@ class Optimizer
 
         foreach ($files as $file) {
             if (file_exists($baseDir.$file)) {
-                $result = file_get_contents($baseDir.$file);
-                $content .= "\n/* - $file - */\n$result\n";
+                $result = exec("java -jar $yuicompressor $baseDir$file");
+                $content .= "/* $file */$result\n";
                 echo "\n    Add: $file";
             } else {
                 echo "\n    Err: $file - not found.";
@@ -182,19 +182,7 @@ class Optimizer
         }
         echo "\n Saving: $filename\n";
 
-        if (strpos($filename, '.js') !== false) {
-            $filenamex = $filename.'mx.js';
-        }
-        if (strpos($filename, '.css') !== false) {
-            $filenamex = $filename.'mx.css';
-        }
-
-        file_put_contents($baseDir.$filenamex, $content);
-        echo "\n Minified ..";
-        file_put_contents($baseDir.$filename,
-                            exec('java -jar '.$yuicompressor.' "'.$baseDir.$filenamex.'"'));
-        echo ".....";
-        unlink($baseDir.$filenamex);
-        echo "....\n";
+        file_put_contents($baseDir.$filename, $content);
+        echo "\n Minified ..\n";
     }
 }

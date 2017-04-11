@@ -130,7 +130,7 @@ class Main
      *
      * @return bool          status of directory (exists/created = false or true)
      */
-    static function checkAndOrCreateDir($dir, $create = false, $perm = '0777')
+    static function checkAndOrCreateDir($dir, $create = false, $perm = 0777)
     {
         if (is_dir($dir) && is_writable($dir)) {
             return true;
