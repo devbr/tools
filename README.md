@@ -10,6 +10,4 @@ Others Tools and Resources
 
 * App - series of functions for your application (see more on file)
 
-### Att
-
-<span style="color:#F00">To use minification and obfuscation of files with the command "optimize" it is necessary to <a href="https://www.java.com/en/download/">install JAVA</a>.</span>
+<b>Attention: </b><span style="color:#F00">To use minification and obfuscation of files with the command "optimize" it is necessary to <a href="https://www.java.com/en/download/">install JAVA</a>.</span>
