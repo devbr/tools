@@ -79,7 +79,7 @@ class Key
     {
         //check if path exists
         if (!is_dir($this->configKeyPath)) {
-            Main::checkAndOrCreateDir($this->configKeyPath, true);
+            Main::copyDirectoryContents(dirname(__DIR__).'/Config/Lib/Key', _CONFIG.'Lib/Key');
         }
         //Now, OPEN_SSL
         $this->createKeys();
