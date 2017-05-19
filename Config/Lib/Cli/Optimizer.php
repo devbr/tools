@@ -28,6 +28,7 @@ class Optimizer
     public $baseDir = null;
     private $css = null;
     private $js = null;
+    private $jss = null;
 
     private static $configFile = false;
     private static $node = false;
@@ -142,6 +143,10 @@ class Optimizer
 
         if (isset($a->js)) {
             $this->js = $a->js;
+        }
+        
+        if (isset($a->jss)) {
+            $this->jss = $a->jss;
         }
         
         return true;

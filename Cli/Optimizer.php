@@ -79,6 +79,10 @@ class Optimizer
                 $this->cmdAll();
                 break;
 
+            case 'jss':
+                $this->cmdJss();
+                break;
+
             default:
                 echo "\n\n  Command \"optimize:".$this->cmd."\" not exists!";
                 exit(Main::help());
@@ -155,6 +159,89 @@ class Optimizer
     {
         $this->cmdCss();
         $this->cmdJs();
+        $this->cmdJss();
+    }
+
+    /**
+     * Jointer command
+     * @return void Configurated files are saved
+     */
+    private function cmdJss()
+    {
+        if ($jss = $this->config->get('jss')) {
+            echo "\n - Compiled JS+CSS -\n";
+
+            if (!$this->subCmd) {
+                foreach ($jss as $k => $v) {
+                    echo "\n - $k:\n";
+                    $this->jssCompiler($v);
+                }
+                return;
+            }
+
+            if (isset($jss->{$this->subCmd})) {
+                echo "\n - ".$this->subCmd."\n";
+                
+                $this->jssCompiler($jss->{$this->subCmd});
+                return;
+            } else {
+                echo "\n Err: Not found!\n";
+                return;
+            }
+        }
+    }
+
+    /**
+     * Jointer JS & CSS
+     * @param  object $config configuration data
+     * @return void         save file
+     */
+    private function jssCompiler($config)
+    {
+        if (!isset($config->filename)) {
+            echo "ERROR!!\n";
+            return false;
+        }
+
+        $content = "var JSS = Array();\n";
+        $width = 4096;
+
+        //CSS
+        if (isset($config->css)) {
+            $tmp = $this->minify(false,
+                                  $config->css,
+                                  $this->yuicompressor,
+                                  $this->config->baseDir);
+
+            $tmp = explode("\n", str_replace("'", "\'", $tmp));
+
+            foreach ($tmp as $k => $v) {
+                $v = trim($v);
+                if ($v == '') {
+                    continue;
+                }
+
+                if (substr($v, -1) == '\\') {
+                    $v .= '\\';
+                }
+
+                $content .= 'JSS['.$k.'] = \''.$v."';\n";
+            }
+        }
+
+        //Função para montagem do STYLE
+        $content .= 'for(var i in JSS){var etmp=document.createElement("STYLE");etmp.type="text/css";etmp.innerHTML=JSS[i];document.head.appendChild(etmp);}document.getElementsByClassName("container")[0].style.display="block";document.getElementById("loader").style.display="none";'."\n";
+
+        //Javascripts
+        if (isset($config->js)) {
+            $content .= $this->minify(false,
+                              $config->js,
+                              $this->yuicompressor,
+                              $this->config->baseDir);
+        }
+
+        file_put_contents($config->filename, $content);
+        echo "\n\n Saving: ".$config->filename."\n";
     }
 
     // ----------------------------------------------------------------------
@@ -167,22 +254,31 @@ class Optimizer
      * @param  string $baseDir       Path of base directory
      * @return void                void
      */
-    private function minify($filename, $files, $yuicompressor, $baseDir)
+    private function minify($filename = false, $files, $yuicompressor, $baseDir, $width = null)
     {
         $content = '';
+        if ($width === null) {
+            $extra = '';
+        } else {
+            $extra = '--line-break '.intval($width);
+        }
 
         foreach ($files as $file) {
             if (file_exists($baseDir.$file)) {
-                $result = exec("java -jar $yuicompressor $baseDir$file");
-                $content .= "/* $file */$result\n";
+                $result = exec("java -jar $yuicompressor $extra $baseDir$file ");
+                $content .= (defined('_MODE') && _MODE == 1 ? "/* $file */" : '')."$result\n";
                 echo "\n    Add: $file";
             } else {
                 echo "\n    Err: $file - not found.";
             }
         }
-        echo "\n Saving: $filename\n";
+            //return minyfied data
+        if ($filename === false) {
+            return $content;
+        }
 
-        file_put_contents($baseDir.$filename, $content);
-        echo "\n Minified ..\n";
+            echo "\n Saving: $filename\n";
+            file_put_contents($baseDir.$filename, $content);
+            echo "\n Minified ..\n";
     }
 }
