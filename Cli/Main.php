@@ -104,22 +104,46 @@ class Main
      *
      * @return string Display user data
      */
+
     function cmdUpdate($v, $arg)
     {
-        $devbr = _APP.'Composer/devbr/';
-        $dir = scandir($devbr);
-        $o = '';
+        $composer_psr4 = dirname(dirname(dirname(__DIR__))).'/composer/autoload_psr4.php';
+        if (!file_exists($composer_psr4)) {
+            ret("I can't find Composer data!");
+        }
 
-        foreach ($dir as $k) {
-            if ($k == '.' || $k == '..') {
+        $composer = require_once $composer_psr4;
+        if (!isset($composer['Config\\'][0])) {
+            ret("I can't find Composer data!");
+        }
+
+        $configDir = $composer['Config\\'][0];
+
+        $dir = scandir($vendorDir.'/devbr');
+        foreach ($dir as $d) {
+            if ($d == '.' || $d == '..') {
                 continue;
             }
-            if (is_file($devbr.$k.'/install.php')) {
-                $o .= include $devbr.$k.'/install.php';
+
+            $key = 'Devbr/'.ucfirst($d);
+
+            if (is_dir("$vendorDir/".strtolower($key)."/Config/")) {
+                echo "\n - Running: $key";
+
+                if (is_dir("$configDir/$key")) {
+                    echo "\n - Configuration already exists - ignored.\n";
+                    continue;
+                }
+
+                //Coping all files (and directorys) in /Config
+                $copy = static::copyDirectoryContents("$vendorDir/".strtolower($key)."/Config", "$configDir/$key");
+
+                //Return to application installer
+                echo "\n - ".($copy === true ? "$key instaled!" : $copy)."\n";
             }
         }
-        return $o;
     }
+
 
     // Checa um diretório e cria se não existe - retorna false se não conseguir ou não existir
     /**
