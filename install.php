@@ -15,9 +15,9 @@ if (!isset($composer['Config\\'][0])) {
 }
 
 //load composer.json and get the "name" of pack 
-$namespace = @json_decode(file_get_contents(__DIR__.'/composer.json'))->name;
+$name = @json_decode(file_get_contents(__DIR__.'/composer.json'))->name;
 
-$namespace = explode('/', $namespace);
+$namespace = explode('/', $name);
 
 $appConfig = $composer['Config\\'][0].'/';
 
@@ -26,7 +26,6 @@ foreach ($namespace as $value) {
 }
 
 $thisConfig = __DIR__.'/Config/';
-//exit("\n\n\---> $appConfig\n");
 
 if (!is_dir($thisConfig)) {
     ret("I can't find 'Config' directory in this pack!");
@@ -40,7 +39,7 @@ if (is_dir($appConfig)) {
 $copy = copyDirectoryContents($thisConfig, $appConfig);
 
 //Return to application installer
-ret($copy === true ? " $namespace instaled!" : $copy);
+ret($copy === true ? " $name instaled!" : $copy);
 
 // THE END ...
 
@@ -55,22 +54,24 @@ ret($copy === true ? " $namespace instaled!" : $copy);
  *
  * @return bool          status of directory (exists/created = false or true)
  */
-function checkAndOrCreateDir($dir, $create = false, $perm = 0777)
-{
-    if (is_dir($dir) && is_writable($dir)) {
-        return true;
-    } elseif ($create === false) {
-        return false;
-    }
 
-    @mkdir($dir, $perm, true);
-    @chmod($dir, $perm);
+if (!function_exists('checkAndOrCreateDir')) {
+    function checkAndOrCreateDir($dir, $create = false, $perm = 0777)
+    {
+        if (is_dir($dir) && is_writable($dir)) {
+            return true;
+        } elseif ($create === false) {
+            return false;
+        }
 
-    if (is_writable($dir)) {
-        return true;
+            @mkdir($dir, $perm, true);
+            @chmod($dir, $perm);
+
+        if (is_writable($dir)) {
+            return true;
+        }
+            return false;
     }
-    return false;
-}
 
 /**
  * Copy entire content of the $dir[ectory]
@@ -80,37 +81,37 @@ function checkAndOrCreateDir($dir, $create = false, $perm = 0777)
  *
  * @return bool         True/false success
  */
-function copyDirectoryContents($dir, $target)
-{
-    $dir = rtrim($dir, "\\/ ").'/';
-    $target = rtrim($target, "\\/ ").'/';
+    function copyDirectoryContents($dir, $target)
+    {
+        $dir = rtrim($dir, "\\/ ").'/';
+        $target = rtrim($target, "\\/ ").'/';
 
-    if (!checkAndOrCreateDir($target, true, 0777)) {
-        return "ERROR: can't create directory '$taget'!";
-    }
-
-    foreach (scandir($dir) as $file) {
-        if ($file == '.' || $file == '..') {
-            continue;
+        if (!checkAndOrCreateDir($target, true, 0777)) {
+            return "ERROR: can't create directory '$taget'!";
         }
 
-        if (is_dir($dir.$file)) {
-            if (!checkAndOrCreateDir($target.$file, true, 0777)) {
-                return "ERROR: can't create directory '$taget$file'!";
-            } else {
-                $copy = copyDirectoryContents($dir.$file, $target.$file);
-                if ($copy !== true) {
-                    return $copy;
+        foreach (scandir($dir) as $file) {
+            if ($file == '.' || $file == '..') {
+                continue;
+            }
+
+            if (is_dir($dir.$file)) {
+                if (!checkAndOrCreateDir($target.$file, true, 0777)) {
+                    return "ERROR: can't create directory '$taget$file'!";
+                } else {
+                    $copy = copyDirectoryContents($dir.$file, $target.$file);
+                    if ($copy !== true) {
+                        return $copy;
+                    }
+                }
+            } elseif (is_file($dir.$file)) {
+                if (!copy($dir.$file, $target.$file)) {
+                    echo "\n ERROR: can't copy '$target$file'!";
                 }
             }
-        } elseif (is_file($dir.$file)) {
-            if (!copy($dir.$file, $target.$file)) {
-                echo "\n ERROR: can't copy '$target$file'!";
-            }
         }
+        return true;
     }
-    return true;
-}
 
 /**
  * Return with message
@@ -119,8 +120,9 @@ function copyDirectoryContents($dir, $target)
  *
  * @return void print and exit
  */
-function ret($msg)
-{
-    echo "\n - $msg";
-    return true;
+    function ret($msg)
+    {
+        echo "\n - $msg";
+        return true;
+    }
 }
