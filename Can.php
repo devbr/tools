@@ -1,10 +1,10 @@
 <?php
 /**
- * Lib\App
+ * Devbr\App
  * PHP version 7
  *
  * @category  Tools
- * @package   Library
+ * @package   Devbrrary
  * @author    Bill Rocha <prbr@ymail.com>
  * @copyright 2016 Bill Rocha <http://google.com/+BillRocha>
  * @license   <https://opensource.org/licenses/MIT> MIT
@@ -43,12 +43,12 @@
     Depende do arquivo com a chave aleatória (gerada na instalação da aplicação)
     define('_CONFIG', 'path/to/config/file/');
 
-    Use "Lib" para gerar uma chave aleatória:
-    >> php Lib key:generate [enter]
+    Use "Devbr" para gerar uma chave aleatória:
+    >> php Devbr key:generate [enter]
 
  */
 
-namespace Lib;
+namespace Devbr;
 
 /**
  * App Class
@@ -87,8 +87,8 @@ class Can
         }
 
         //get "base" key OR use default
-        if (file_exists(_CONFIG.'Lib/Key/can.key')) {
-            $base = file_get_contents(_CONFIG.'Lib/Key/can.key');
+        if (file_exists(_CONFIG.'Devbr/Key/can.key')) {
+            $base = file_get_contents(_CONFIG.'Devbr/Key/can.key');
             static::$base = [];
             static::$extra_base = [];
             $base = explode("\n", $base);

@@ -1,6 +1,6 @@
 <?php
 /**
- * Lib\App
+ * Devbr\App
  * PHP version 7
  *
  * @category  Tools
@@ -12,10 +12,10 @@
  * @link      http://paulorocha.tk/devbr
  */
 
-namespace Lib;
+namespace Devbr;
 
-use Lib;
-use Config\Lib\Resource;
+use Devbr;
+use Config\Devbr\Resource;
 
 /**
  * App Class

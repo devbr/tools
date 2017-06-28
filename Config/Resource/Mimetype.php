@@ -12,7 +12,7 @@
  * @link      http://paulorocha.tk/devbr
  */
 
-namespace Config\Resource;
+namespace Config\Devbr\Resource;
 
 /**
  * Mimetype Class

@@ -1,6 +1,6 @@
 <?php
 /**
- * Lib\Cli\Main
+ * Devbr\Cli\Main
  * PHP version 7
  *
  * @category  Tools
@@ -12,10 +12,10 @@
  * @link      http://paulorocha.tk/devbr
  */
 
-namespace Lib\Cli;
+namespace Devbr\Cli;
 
 /**
- * Lib\Cli\Main Class
+ * Devbr\Cli\Main Class
  *
  * @category  Tools
  * @package   Cli

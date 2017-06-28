@@ -1,6 +1,6 @@
 <?php
 /**
- * Lib\Cli\Key
+ * Devbr\Cli\Key
  * PHP version 7
  *
  * @category  Tools
@@ -12,12 +12,12 @@
  * @link      http://paulorocha.tk/devbr
  */
 
-namespace Lib\Cli;
+namespace Devbr\Cli;
 
-use Lib;
+use Devbr;
 
 /**
- * Lib\Cli\Key Class
+ * Devbr\Cli\Key Class
  *
  * @category  Tools
  * @package   Cli
@@ -43,7 +43,7 @@ class Key
     
         $this->cmd = strtolower($cmd);
         $this->arg = $arg;
-        $this->configKeyPath = (defined('_CONFIG') ? _CONFIG : dirname(__DIR__, 4).'/Config/').'Lib/Key/';
+        $this->configKeyPath = (defined('_CONFIG') ? _CONFIG : dirname(__DIR__, 4).'/Config/').'Devbr/Key/';
     }
 
     /**
@@ -79,7 +79,7 @@ class Key
     {
         //check if path exists
         if (!is_dir($this->configKeyPath)) {
-            Main::copyDirectoryContents(dirname(__DIR__).'/Config/Lib/Key', _CONFIG.'Lib/Key');
+            Main::copyDirectoryContents(dirname(__DIR__).'/Config/Devbr/Key', _CONFIG.'Devbr/Key');
         }
         //Now, OPEN_SSL
         $this->createKeys();
@@ -113,9 +113,9 @@ class Key
     private function createKeys()
     {
         //Create Can Keys
-        shuffle(Lib\Can::$base);
-        shuffle(Lib\Can::$extra_base);
-        file_put_contents($this->configKeyPath.'can.key', implode(Lib\Can::$base)."\n".implode(Lib\Can::$extra_base));
+        shuffle(Devbr\Can::$base);
+        shuffle(Devbr\Can::$extra_base);
+        file_put_contents($this->configKeyPath.'can.key', implode(Devbr\Can::$base)."\n".implode(Devbr\Can::$extra_base));
 
         $SSLcnf = [];
         $dn = [];

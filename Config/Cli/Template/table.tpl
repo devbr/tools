@@ -14,7 +14,7 @@
 
 namespace %namespace%;
 
-use Lib\Db;
+use Devbr\Database;
 
 /**
  * %name% Class
@@ -25,7 +25,7 @@ use Lib\Db;
  * @license  <https://opensource.org/licenses/MIT> MIT
  * @link     http://paulorocha.tk/devbr
  */
-class %name% extends Db
+class %name% extends Database
 {
 	%params%
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * Lib\Cli\Optimizer
+ * Devbr\Cli\Optimizer
  * PHP version 7
  *
  * @category  Tools
@@ -12,12 +12,12 @@
  * @link      http://paulorocha.tk/devbr
  */
 
-namespace Lib\Cli;
+namespace Devbr\Cli;
 
-use Config\Lib\Cli;
+use Config\Devbr\Cli;
 
 /**
- * Lib\Cli\Optimizer Class
+ * Devbr\Cli\Optimizer Class
  *
  * @category  Tools
  * @package   Cli

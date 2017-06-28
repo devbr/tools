@@ -49,15 +49,16 @@
  * @link https://github.com/ivantcholakov/gibberish-aes-php
  *
  * @version 1.2.0
- * @package Lib
+ * @package Devbr
  *
  * @license The MIT License (MIT)
  * @link http://opensource.org/licenses/MIT
  */
 
-namespace Lib;
+namespace Devbr;
 
-class Aes {
+class Aes
+{
 
     // The default key size in bits.
     protected static $key_size = 256;
@@ -83,8 +84,12 @@ class Aes {
     // I am going in a future release to remove this feature permanently.
 
     // This is a static class, instances are disabled.
-    final private function __construct() {}
-    final private function __clone() {}
+    final private function __construct()
+    {
+    }
+    final private function __clone()
+    {
+    }
 
     /**
      * Crypt AES (256, 192, 128)
@@ -96,10 +101,12 @@ class Aes {
      *                              a binary key that is to be used for encryption.
      * @return  mixed               base64 encrypted string, FALSE on failure.
      */
-    public static function enc($string, $pass, $key_size = null) 
-    {   
-        if($key_size !== null) self::$key_size = $key_size;
-        $key_size = self::$key_size;        
+    public static function enc($string, $pass, $key_size = null)
+    {
+        if ($key_size !== null) {
+            self::$key_size = $key_size;
+        }
+        $key_size = self::$key_size;
 
         // Set a random salt.
         $salt = self::random_pseudo_bytes(8);
@@ -114,7 +121,6 @@ class Aes {
         $salted_length = $key_length + $block_length;
 
         while (self::strlen($salted) < $salted_length) {
-
             $dx = md5($dx.$pass.$salt, true);
             $salted .= $dx;
         }
@@ -134,9 +140,11 @@ class Aes {
      * @param   string  $pass       The secret pass-phrase that has been used for encryption.
      * @return  mixed               base64 decrypted string, FALSE on failure.
      */
-    public static function dec($string, $pass, $key_size = null) 
-    {   
-        if($key_size !== null) self::$key_size = $key_size;
+    public static function dec($string, $pass, $key_size = null)
+    {
+        if ($key_size !== null) {
+            self::$key_size = $key_size;
+        }
         $key_size = self::$key_size;
 
         // Lengths in bytes:
@@ -168,7 +176,6 @@ class Aes {
         $result = $md5_hash[0];
 
         for ($i = 1; $i < $rounds; $i++) {
-
             $md5_hash[$i] = md5($md5_hash[$i - 1].$data00, true);
             $result .= $md5_hash[$i];
         }
@@ -186,7 +193,8 @@ class Aes {
      *                                  this method is just a getter of the current key size value.
      * @return  integer                 Returns the old key size value.
      */
-    public static function size($newsize = null) {
+    public static function size($newsize = null)
+    {
 
         $result = self::$key_size;
 
@@ -215,10 +223,10 @@ class Aes {
 
     // Non-public methods ------------------------------------------------------
 
-    protected static function openssl_random_pseudo_bytes_exists() {
+    protected static function openssl_random_pseudo_bytes_exists()
+    {
 
         if (!isset(self::$openssl_random_pseudo_bytes_exists)) {
-
             self::$openssl_random_pseudo_bytes_exists = function_exists('openssl_random_pseudo_bytes') &&
                 (version_compare(PHP_VERSION, '5.3.4') >= 0 || !self::is_windows());
         }
@@ -226,10 +234,10 @@ class Aes {
         return self::$openssl_random_pseudo_bytes_exists;
     }
 
-    protected static function mcrypt_dev_urandom_exists() {
+    protected static function mcrypt_dev_urandom_exists()
+    {
 
         if (!isset(self::$mcrypt_dev_urandom_exists)) {
-
             self::$mcrypt_dev_urandom_exists = function_exists('mcrypt_create_iv') &&
                 (version_compare(PHP_VERSION, '5.3.7') >= 0 || !self::is_windows());
         }
@@ -237,7 +245,8 @@ class Aes {
         return self::$mcrypt_dev_urandom_exists;
     }
 
-    protected static function openssl_encrypt_exists() {
+    protected static function openssl_encrypt_exists()
+    {
 
         if (!isset(self::$openssl_encrypt_exists)) {
             self::$openssl_encrypt_exists = function_exists('openssl_encrypt')
@@ -248,7 +257,8 @@ class Aes {
         return self::$openssl_encrypt_exists;
     }
 
-    protected static function openssl_decrypt_exists() {
+    protected static function openssl_decrypt_exists()
+    {
 
         if (!isset(self::$openssl_decrypt_exists)) {
             self::$openssl_decrypt_exists = function_exists('openssl_decrypt')
@@ -259,7 +269,8 @@ class Aes {
         return self::$openssl_decrypt_exists;
     }
 
-    protected static function mcrypt_exists() {
+    protected static function mcrypt_exists()
+    {
 
         if (!isset(self::$mcrypt_exists)) {
             self::$mcrypt_exists = function_exists('mcrypt_encrypt');
@@ -268,10 +279,10 @@ class Aes {
         return self::$mcrypt_exists;
     }
 
-    protected static function openssl_cli_exists() {
+    protected static function openssl_cli_exists()
+    {
 
         if (!isset(self::$openssl_cli_exists)) {
-
             exec('openssl version', $output, $return);
             self::$openssl_cli_exists = $return == 0;
         }
@@ -279,13 +290,15 @@ class Aes {
         return self::$openssl_cli_exists;
     }
 
-    protected static function is_windows() {
+    protected static function is_windows()
+    {
 
         // Beware about 'Darwin'.
         return 0 === stripos(PHP_OS, 'win');
     }
 
-    protected static function mbstring_func_overload() {
+    protected static function mbstring_func_overload()
+    {
 
         if (!isset(self::$mbstring_func_overload)) {
             self::$mbstring_func_overload = extension_loaded('mbstring') && ini_get('mbstring.func_overload');
@@ -294,17 +307,18 @@ class Aes {
         return self::$mbstring_func_overload;
     }
 
-    protected static function strlen($str) {
+    protected static function strlen($str)
+    {
 
         return self::mbstring_func_overload() ? mb_strlen($str, '8bit') : strlen($str);
     }
 
-    protected static function substr($str, $start, $length = null) {
+    protected static function substr($str, $start, $length = null)
+    {
 
         if (self::mbstring_func_overload()) {
-
             // mb_substr($str, $start, null, '8bit') returns an empty string on PHP 5.3
-            isset($length) OR $length = ($start >= 0 ? self::strlen($str) - $start : -$start);
+            isset($length) or $length = ($start >= 0 ? self::strlen($str) - $start : -$start);
 
             return mb_substr($str, $start, $length, '8bit');
         }
@@ -312,14 +326,14 @@ class Aes {
         return isset($length) ? substr($str, $start, $length) : substr($str, $start);
     }
 
-    protected static function random_pseudo_bytes($length) {
+    protected static function random_pseudo_bytes($length)
+    {
 
         if (self::openssl_random_pseudo_bytes_exists()) {
             return openssl_random_pseudo_bytes($length);
         }
 
         if (self::mcrypt_dev_urandom_exists()) {
-
             $rnd = mcrypt_create_iv($length, MCRYPT_DEV_URANDOM);
 
             if ($rnd !== false) {
@@ -456,7 +470,8 @@ class Aes {
          */
     }
 
-    protected static function aes_cbc_encrypt($string, $key, $iv) {
+    protected static function aes_cbc_encrypt($string, $key, $iv)
+    {
 
         $key_size = self::$key_size;
 
@@ -465,14 +480,12 @@ class Aes {
         }
 
         if (self::mcrypt_exists()) {
-
             // Info: http://www.chilkatsoft.com/p/php_aes.asp
             // http://en.wikipedia.org/wiki/Block_cipher_modes_of_operation
 
             $cipher = mcrypt_module_open(MCRYPT_RIJNDAEL_128, '', MCRYPT_MODE_CBC, '');
 
             if (mcrypt_generic_init($cipher, $key, $iv) != -1) {
-
                 $encrypted = mcrypt_generic($cipher, self::pkcs7_pad($string));
                 mcrypt_generic_deinit($cipher);
                 mcrypt_module_close($cipher);
@@ -484,7 +497,6 @@ class Aes {
         }
 
         if (self::openssl_cli_exists()) {
-
             $cmd = 'echo '.self::escapeshellarg($string).' | openssl enc -e -a -A -aes-'.$key_size.'-cbc -K '.self::strtohex($key).' -iv '.self::strtohex($iv);
 
             exec($cmd, $output, $return);
@@ -501,7 +513,8 @@ class Aes {
         return false;
     }
 
-    protected static function aes_cbc_decrypt($crypted, $key, $iv) {
+    protected static function aes_cbc_decrypt($crypted, $key, $iv)
+    {
 
         $key_size = self::$key_size;
 
@@ -510,11 +523,9 @@ class Aes {
         }
 
         if (self::mcrypt_exists()) {
-
             $cipher = mcrypt_module_open(MCRYPT_RIJNDAEL_128, '', MCRYPT_MODE_CBC, '');
 
             if (mcrypt_generic_init($cipher, $key, $iv) != -1) {
-
                 $decrypted = mdecrypt_generic($cipher, $crypted);
                 mcrypt_generic_deinit($cipher);
                 mcrypt_module_close($cipher);
@@ -526,7 +537,6 @@ class Aes {
         }
 
         if (self::openssl_cli_exists()) {
-
             $string = base64_encode($crypted);
 
             $cmd = 'echo '.self::escapeshellarg($string).' | openssl enc -d -a -A -aes-'.$key_size.'-cbc -K '.self::strtohex($key).' -iv '.self::strtohex($iv);
@@ -547,7 +557,8 @@ class Aes {
 
     // See http://www.php.net/manual/en/function.mcrypt-decrypt.php#105985
 
-    protected static function pkcs7_pad($string) {
+    protected static function pkcs7_pad($string)
+    {
 
         // 128 bits: $block_length = mcrypt_get_block_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
         $block_length = 16;
@@ -556,7 +567,8 @@ class Aes {
         return $string.str_repeat(chr($pad), $pad);
     }
 
-    protected static function remove_pkcs7_pad($string) {
+    protected static function remove_pkcs7_pad($string)
+    {
 
         // 128 bits: $block_length = mcrypt_get_block_size(MCRYPT_RIJNDAEL_128, MCRYPT_MODE_CBC);
         $block_length = 16;
@@ -564,11 +576,9 @@ class Aes {
         $pad = ord($string[$len - 1]);
 
         if ($pad > 0 && $pad <= $block_length) {
-
             $valid_pad = true;
 
             for ($i = 1; $i <= $pad; $i++) {
-
                 if (ord($string[$len - $i]) != $pad) {
                     $valid_pad = false;
                     break;
@@ -583,7 +593,8 @@ class Aes {
         return $string;
     }
 
-    protected static function strtohex($string) {
+    protected static function strtohex($string)
+    {
 
         $result = '';
 
@@ -594,10 +605,10 @@ class Aes {
         return $result;
     }
 
-    protected static function escapeshellarg($arg) {
+    protected static function escapeshellarg($arg)
+    {
 
         if (self::is_windows()) {
-
             // See http://stackoverflow.com/questions/6427732/how-can-i-escape-an-arbitrary-string-for-use-as-a-command-line-argument-in-windo
 
             // Sequence of backslashes followed by a double quote:
@@ -623,5 +634,4 @@ class Aes {
         // See http://markushedlund.com/dev-tech/php-escapeshellarg-with-unicodeutf-8-support
         return "'" . str_replace("'", "'\\''", $arg) . "'";
     }
-
 }

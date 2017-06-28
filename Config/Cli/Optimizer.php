@@ -1,6 +1,6 @@
 <?php
 /**
- * Config\Lib\Cli
+ * Config\Devbr\Cli
  * PHP version 7
  *
  * @category  Tools
@@ -12,7 +12,7 @@
  * @link      http://paulorocha.tk/devbr
  */
 
-namespace Config\Lib\Cli;
+namespace Config\Devbr\Cli;
 
 /**
  * Optimizer Config Class

@@ -1,6 +1,6 @@
 <?php
 /**
- * Lib\Cli\Make
+ * Devbr\Cli\Make
  * PHP version 7
  *
  * @category  Tools
@@ -12,10 +12,10 @@
  * @link      http://paulorocha.tk/devbr
  */
 
-namespace Lib\Cli;
+namespace Devbr\Cli;
 
 /**
- * Lib\Cli\Make Class
+ * Devbr\Cli\Make Class
  *
  * @category  Tools
  * @package   Cli
@@ -42,7 +42,7 @@ class Make
     
         $this->cmd = strtolower($cmd);
         $this->arg = $arg;
-        $this->configTemplate = (defined('_CONFIG') ? _CONFIG : dirname(__DIR__).'/Config/').'Lib/Cli/Template/';
+        $this->configTemplate = (defined('_CONFIG') ? _CONFIG : dirname(__DIR__).'/Config/').'Devbr/Cli/Template/';
         $this->phpRoot = defined('_APP') ? _APP : dirname(__DIR__, 4).'/';
     }
 
