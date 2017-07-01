@@ -48,11 +48,11 @@ class Optimizer
         }
 
         if (!file_exists($file)) {
-            $this->js->name->filename = "js/main.min.js";
-            $this->js->name->add = ["js/source/main.js"];
+            @$this->js->name->filename = "js/main.min.js";
+            @$this->js->name->add = ["js/source/main.js"];
             
-            $this->css->name->filename = "css/main.min.css";
-            $this->css->name->add = ["css/source/main.css"];
+            @$this->css->name->filename = "css/main.min.css";
+            @$this->css->name->add = ["css/source/main.css"];
             
             $this->save();
         }
