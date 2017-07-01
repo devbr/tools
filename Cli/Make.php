@@ -42,8 +42,8 @@ class Make
     
         $this->cmd = strtolower($cmd);
         $this->arg = $arg;
-        $this->configTemplate = (defined('_CONFIG') ? _CONFIG : dirname(__DIR__).'/Config/').'Devbr/Cli/Template/';
-        $this->phpRoot = defined('_APP') ? _APP : dirname(__DIR__, 4).'/';
+        $this->configTemplate = \Config\App::Config().'Cli/Template/';
+        $this->phpRoot = \Config\App::Php();
     }
 
     /**

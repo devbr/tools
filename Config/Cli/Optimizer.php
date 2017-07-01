@@ -12,7 +12,7 @@
  * @link      http://paulorocha.tk/devbr
  */
 
-namespace Config\Devbr\Cli;
+namespace Config\Cli;
 
 /**
  * Optimizer Config Class
@@ -25,10 +25,10 @@ namespace Config\Devbr\Cli;
  */
 class Optimizer
 {
-    public $baseDir = null;
-    private $css = null;
-    private $js = null;
-    private $jss = null;
+    public $baseDir =  null;
+    private $css =      null;
+    private $js =       null;
+    private $jss =      null;
 
     private static $configFile = false;
     private static $node = false;
@@ -43,14 +43,8 @@ class Optimizer
             $file = static::$configFile;
         }
         if ($file == false) {
-            static::$configFile = __DIR__.'/'.pathinfo(__FILE__, PATHINFO_FILENAME).'.json';
-            $file = static::$configFile;
-
-            if (defined('_WWW')) {
-                $this->baseDir = _WWW;
-            } else {
-                $this->baseDir = dirname(dirname(dirname(dirname(__DIR__)))).'/';
-            }
+            $file = static::$configFile = str_replace('.php', '.json', __FILE__);
+            $this->baseDir = \Config\App::Web();
         }
 
         if (!file_exists($file)) {

@@ -87,8 +87,8 @@ class Can
         }
 
         //get "base" key OR use default
-        if (file_exists(_CONFIG.'Devbr/Key/can.key')) {
-            $base = file_get_contents(_CONFIG.'Devbr/Key/can.key');
+        if (file_exists(\Config\App::Config().'Key/can.key')) {
+            $base = file_get_contents(\Config\App::Config().'/Key/can.key');
             static::$base = [];
             static::$extra_base = [];
             $base = explode("\n", $base);

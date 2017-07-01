@@ -15,7 +15,7 @@
 namespace Devbr;
 
 use Devbr;
-use Config\Devbr\Resource;
+use Config\Resource;
 
 /**
  * App Class
