@@ -119,29 +119,32 @@ class Main
 
         $configDir = $composer['Config\\'][0];
 
+        $report = [];
         $dir = scandir($vendorDir.'/devbr');
-        foreach ($dir as $d) {
-            if ($d == '.' || $d == '..') {
+        //varre todos os componentes "DEVBR"
+        foreach ($dir as $componente) {
+            if ($componente == '.' || $componente == '..') {
                 continue;
             }
 
-            $key = 'Devbr/'.ucfirst($d);
-
-            if (is_dir("$vendorDir/".strtolower($key)."/Config/")) {
-                echo "\n - Running: $key";
-
-                if (is_dir("$configDir/$key")) {
-                    echo "\n - Configuration already exists - ignored.\n";
-                    continue;
-                }
-
+            if (is_dir("$vendorDir/devbr/$componente/Config")) {
                 //Coping all files (and directorys) in /Config
-                $copy = static::copyDirectoryContents("$vendorDir/".strtolower($key)."/Config", "$configDir/$key");
+                $copy = static::copyDirectoryContents("$vendorDir/devbr/$componente/Config", "$configDir", false);
+                $report["devbr/$componente"] = $copy;
 
                 //Return to application installer
-                echo "\n - ".($copy === true ? "$key instaled!" : $copy)."\n";
+                echo "\n - Installing ".ucfirst($componente).'...';
+
+                if (isset($copy['error']['permission'])) {
+                    echo "\n   Not allowed to copy one or more files\n\n";
+                } else {
+                    echo "\n   ".(isset($copy['error']['overwrite']) ? 'Some configuration files already existed.' : 'Success!')."\n\n";
+                }
             }
         }
+
+        //Saving a log file
+        file_put_contents("$configDir/install.log.json", json_encode($report, JSON_PRETTY_PRINT));
     }
 
 
@@ -162,13 +165,14 @@ class Main
             return false;
         }
 
-            @mkdir($dir, $perm, true);
-            @chmod($dir, $perm);
+        @mkdir($dir, $perm, true);
+        @chmod($dir, $perm);
 
-        if (is_writable($dir)) {
-            return true;
-        }
+        if (!is_writable($dir)) {
             return false;
+        }
+        
+        return true;
     }
 
     /**
@@ -177,13 +181,15 @@ class Main
      * @param  string $target Destination
      * @return bool         True/false success
      */
-    static function copyDirectoryContents($dir, $target)
+    static function copyDirectoryContents($dir, $target, $overwrite = true)
     {
         $dir = rtrim($dir, "\\/ ").'/';
         $target = rtrim($target, "\\/ ").'/';
+        $report = ['error'=>[],'copied'=>[]];
 
         if (!static::checkAndOrCreateDir($target, true, 0777)) {
-            return "ERROR: can't create directory '$taget'!";
+            $report['error']['permission'] = $taget;
+            return $report;
         }
 
         foreach (scandir($dir) as $file) {
@@ -193,20 +199,26 @@ class Main
 
             if (is_dir($dir.$file)) {
                 if (!static::checkAndOrCreateDir($target.$file, true, 0777)) {
-                    return "ERROR: can't create directory '$taget$file'!";
+                    $report['error']['permission'] = $taget.$file;
+                    return $report;
                 } else {
-                    $copy = static::copyDirectoryContents($dir.$file, $target.$file);
-                    if ($copy !== true) {
-                        return $copy;
-                    }
+                    $copy = static::copyDirectoryContents($dir.$file, $target.$file, $overwrite);
+                    $report = array_merge($report, $copy);
                 }
             } elseif (is_file($dir.$file)) {
+                if ($overwrite === false && file_exists($target.$file)) {
+                    $report['error']['overwrite'][] = $target.$file;
+                    continue;
+                }
                 if (!copy($dir.$file, $target.$file)) {
-                    echo "\n ERROR: can't copy '$target$file'!";
+                    $report['error']['permission'] = $target.$file;//echo "\n ERROR: can't copy '$target$file'!";
+                    return $report;
+                } else {
+                    $report['copied'][] = $target.$file;
                 }
             }
         }
-        return true;
+        return $report;
     }
 
     /**
