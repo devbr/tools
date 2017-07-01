@@ -129,7 +129,7 @@ class Main
 
             if (is_dir("$vendorDir/devbr/$componente/Config")) {
                 //Coping all files (and directorys) in /Config
-                $copy = static::copyDirectoryContents("$vendorDir/devbr/$componente/Config", "$configDir", false);
+                $copy = static::copyDirectoryContents("$vendorDir/devbr/$componente/Config", "$configDir", false, $configDir);
                 $report["devbr/$componente"] = $copy;
 
                 //Return to application installer
@@ -181,7 +181,7 @@ class Main
      * @param  string $target Destination
      * @return bool         True/false success
      */
-    static function copyDirectoryContents($dir, $target, $overwrite = true)
+    static function copyDirectoryContents($dir, $target, $overwrite = true, $base = '')
     {
         $dir = rtrim($dir, "\\/ ").'/';
         $target = rtrim($target, "\\/ ").'/';
@@ -202,19 +202,19 @@ class Main
                     $report['error']['permission'] = $taget.$file;
                     return $report;
                 } else {
-                    $copy = static::copyDirectoryContents($dir.$file, $target.$file, $overwrite);
-                    $report = array_merge($report, $copy);
+                    $copy = static::copyDirectoryContents($dir.$file, $target.$file, $overwrite, $base);
+                    $report = array_merge_recursive($report, $copy);
                 }
             } elseif (is_file($dir.$file)) {
                 if ($overwrite === false && file_exists($target.$file)) {
-                    $report['error']['overwrite'][] = $target.$file;
+                    $report['error']['overwrite'][] = str_replace($base.'/', '', $target.$file);
                     continue;
                 }
                 if (!copy($dir.$file, $target.$file)) {
-                    $report['error']['permission'] = $target.$file;//echo "\n ERROR: can't copy '$target$file'!";
+                    $report['error']['permission'] = $target.$file;
                     return $report;
                 } else {
-                    $report['copied'][] = $target.$file;
+                    $report['copied'][] = str_replace($base.'/', '', $target.$file);
                 }
             }
         }
