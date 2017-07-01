@@ -9,7 +9,7 @@
  * @copyright 2016 Bill Rocha <http://google.com/+BillRocha>
  * @license   <https://opensource.org/licenses/MIT> MIT
  * @version   GIT: 0.0.2
- * @link      http://paulorocha.tk/devbr
+ * @link      http://dbrasil.tk/devbr
  */
 
 namespace Config\Cli;
@@ -21,7 +21,7 @@ namespace Config\Cli;
  * @package  Config
  * @author   Bill Rocha <prbr@ymail.com>
  * @license  <https://opensource.org/licenses/MIT> MIT
- * @link     http://paulorocha.tk/devbr
+ * @link     http://dbrasil.tk/devbr
  */
 class Optimizer
 {
@@ -43,7 +43,7 @@ class Optimizer
             $file = static::$configFile;
         }
         if ($file == false) {
-            $file = static::$configFile = str_replace('.php', '.json', __FILE__);
+            $file = static::$configFile = substr_replace(__FILE__, '.json', '-4');
             $this->baseDir = \Config\App::Web();
         }
 
