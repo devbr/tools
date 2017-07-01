@@ -4,7 +4,7 @@
     "keywords": ["utils","tools","can","AES"],
     "license": "MIT",
     "type": "library",
-    "homepage": "http://paulorocha.tk/devbr/",
+    "homepage": "http://dbrasil.tk/devbr/",
     "authors": [{
         "name": "Bill Rocha",
         "email": "prbr@ymail.com"
@@ -16,6 +16,10 @@
         "php": ">=5.6.28"
     },
     "autoload": {
-        "psr-4": {"Devbr\\": ""}
+        "psr-4": {
+            "Devbr\\": "",
+            "Config\\":"Config/"
+        }
     }
 }
+
