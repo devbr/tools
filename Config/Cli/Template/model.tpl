@@ -9,14 +9,14 @@
  * @copyright 2016 Bill Rocha <http://google.com/+BillRocha>
  * @license   <https://opensource.org/licenses/MIT> MIT
  * @version   GIT: 0.0.1
- * @link      http://paulorocha.tk/devbr
+ * @link      http://dbrasil.tk/devbr
  */
 
 namespace %namespace%;
 
-use Resource\Model;
-use Lib\Db;
-use Config\Database;
+use Devbr\Model;
+use Devbr\Database;
+use Config\Database as DbConfig;
 
 /**
  * %name% Class
@@ -25,7 +25,7 @@ use Config\Database;
  * @package  Library
  * @author   Bill Rocha <prbr@ymail.com>
  * @license  <https://opensource.org/licenses/MIT> MIT
- * @link     http://paulorocha.tk/devbr
+ * @link     http://dbrasil.tk/devbr
  */
 class %name% extends Model
 {

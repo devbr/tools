@@ -9,7 +9,7 @@
  * @copyright 2016 Bill Rocha <http://google.com/+BillRocha>
  * @license   <https://opensource.org/licenses/MIT> MIT
  * @version   GIT: 0.0.2
- * @link      http://paulorocha.tk/devbr
+ * @link      http://dbrasil.tk/devbr
  */
 
 namespace Devbr\Cli;
@@ -21,7 +21,7 @@ namespace Devbr\Cli;
  * @package   Cli
  * @author   Bill Rocha <prbr@ymail.com>
  * @license  <https://opensource.org/licenses/MIT> MIT
- * @link     http://paulorocha.tk/devbr
+ * @link     http://dbrasil.tk/devbr
  */
 class Make
 {
@@ -42,8 +42,8 @@ class Make
     
         $this->cmd = strtolower($cmd);
         $this->arg = $arg;
-        $this->configTemplate = \Config\App::Config().'Cli/Template/';
-        $this->phpRoot = \Config\App::Php();
+        $this->configTemplate = \App::Config().'Cli/Template/';
+        $this->phpRoot = \App::Php();
     }
 
     /**

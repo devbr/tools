@@ -9,7 +9,7 @@
  * @copyright 2016 Bill Rocha <http://google.com/+BillRocha>
  * @license   <https://opensource.org/licenses/MIT> MIT
  * @version   GIT: 0.0.2
- * @link      http://paulorocha.tk/devbr
+ * @link      http://dbrasil.tk/devbr
  */
 
 namespace Devbr\Cli;
@@ -23,7 +23,7 @@ use Devbr;
  * @package   Cli
  * @author   Bill Rocha <prbr@ymail.com>
  * @license  <https://opensource.org/licenses/MIT> MIT
- * @link     http://paulorocha.tk/devbr
+ * @link     http://dbrasil.tk/devbr
  */
 class Key
 {
@@ -43,7 +43,7 @@ class Key
     
         $this->cmd = strtolower($cmd);
         $this->arg = $arg;
-        $this->configKeyPath = \Config\App::Config().'Key/';
+        $this->configKeyPath = \App::Config().'Key/';
     }
 
     /**

@@ -25,7 +25,7 @@ namespace Config\Cli;
  */
 class Optimizer
 {
-    public $baseDir =  null;
+    public $baseDir =   null;
     private $css =      null;
     private $js =       null;
     private $jss =      null;
@@ -44,7 +44,7 @@ class Optimizer
         }
         if ($file == false) {
             $file = static::$configFile = substr_replace(__FILE__, '.json', '-4');
-            $this->baseDir = \Config\App::Web();
+            $this->baseDir = \App::Web();
         }
 
         if (!file_exists($file)) {

@@ -9,13 +9,12 @@
  * @copyright 2016 Bill Rocha <http://google.com/+BillRocha>
  * @license   <https://opensource.org/licenses/MIT> MIT
  * @version   GIT: 0.0.1
- * @link      http://paulorocha.tk/devbr
+ * @link      http://dbrasil.tk/devbr
  */
 
 namespace %namespace%;
 
-use Resource\Main;
-use Resource\Model;
+use App;
 
 /**
  * %name% Class
@@ -24,9 +23,9 @@ use Resource\Model;
  * @package  Library
  * @author   Bill Rocha <prbr@ymail.com>
  * @license  <https://opensource.org/licenses/MIT> MIT
- * @link     http://paulorocha.tk/devbr
+ * @link     http://dbrasil.tk/devbr
  */
-class %name% extends Main 
+class %name%
 {
 
     function __construct()
