@@ -10,10 +10,8 @@ Others Tools and Resources
 
 ## In this package:
 
-* AES - class for encode/encode with AES up to 256 bits
+* AES - class for encode/decode with AES up to 256 bits
 
-* Can - encode/decode a &copy;CAN code 
-
-* App - series of functions for your application (see more on file)
+* Can - encode/decode a &copy;CAN code
 
 <b>TODO:</b> In the future this will be the core of the application with the "devbr/website".
