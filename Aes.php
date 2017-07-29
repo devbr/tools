@@ -101,7 +101,7 @@ class Aes
      *                              a binary key that is to be used for encryption.
      * @return  mixed               base64 encrypted string, FALSE on failure.
      */
-    public static function enc($string, $pass, $key_size = null)
+    public static function enc($string, $pass, $key_size = null, $binary = false)
     {
         if ($key_size !== null) {
             self::$key_size = $key_size;
@@ -130,7 +130,7 @@ class Aes
 
         $encrypted = self::aes_cbc_encrypt($string, $key, $iv);
 
-        return $encrypted !== false ? base64_encode('Salted__'.$salt.$encrypted) : false;
+        return $encrypted !== false ? ($binary === false ? base64_encode('Salted__'.$salt.$encrypted) : $salt.$encrypted) : false;
     }
 
     /**
@@ -220,6 +220,21 @@ class Aes
 
         return $result;
     }
+
+
+    /*
+        Binary encode/decode
+     */
+    public static function binEnc($string, $pass, $key_size = null)
+    {
+        return self::enc($string, $pass, $key_size, true);
+    }
+
+    public static function binDec($binary, $pass)
+    {
+        return self::dec(base64_encode('Salted__'.$binary), $pass);
+    }
+    
 
     // Non-public methods ------------------------------------------------------
 
