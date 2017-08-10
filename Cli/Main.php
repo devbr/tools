@@ -220,6 +220,31 @@ class Main
         }
         return $report;
     }
+    
+    /**
+     * Remove Directory 
+     * 
+     * @param  string $src pack of directory to remove
+     * 
+     * @return void        void
+     */
+    static private function removeDirectory($src) 
+    {
+        $dir = opendir($src);
+        while(false !== ( $file = readdir($dir)) ) {
+            if ($file != '.' && $file != '..') {
+                $full = $src . '/' . $file;
+
+                if ( is_dir($full) ) {
+                    self::removeDirectory($full);
+                } else {
+                    unlink($full);
+                }
+            }
+        }
+        closedir($dir);
+        rmdir($src);
+    }
 
     /**
      * return a help information text
