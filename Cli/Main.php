@@ -166,7 +166,6 @@ class Main
 			}
             echo "\n";
 		}
-		echo "\n";
 
 		//Saving a log file
 		file_put_contents("$configDir/install.log.json", json_encode($report, JSON_PRETTY_PRINT));
