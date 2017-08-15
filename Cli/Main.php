@@ -26,253 +26,277 @@ namespace Devbr\Cli;
 class Main
 {
 
-    private $timer = 0;
+	private $timer = 0;
 
-    /**
-     * Constructor
-     *
-     * @param array $argv Command line array
-     */
-    function __construct($argv)
-    {
-        echo "  Command Line Tool!\n";
-        if (php_sapi_name() !== 'cli') {
+	/**
+	 * Constructor
+	 *
+	 * @param array $argv Command line array
+	 */
+	function __construct($argv)
+	{
+		echo "  Command Line Tool!\n";
+		if (php_sapi_name() !== 'cli') {
             exit('It\'s no cli!');
-        }
+		}
 
-        //Constants:
-        $this->timer = microtime(true);
+		//Constants:
+		$this->timer = microtime(true);
 
-        //Command line settings...
-        echo $this->request($argv);
+		//Command line settings...
+		echo $this->request($argv);
 
-        exit("\n  Finished in ".number_format((microtime(true)-$this->timer)*1000, 3)." ms.\n");
-    }
+		exit("\n  Finished in ".number_format((microtime(true)-$this->timer)*1000, 3)." ms.\n");
+	}
 
-    //CORE Request
-    function request($rqst)
-    {
-        array_shift($rqst);
-        $ax = $rqst;
-        foreach ($rqst as $a) {
-            array_shift($ax);
-            if (strpos($a, '-h') !== false || strpos($a, '?') !== false) {
-                return self::help();
-            }
-            if (strpos($a, 'optimize:') !== false) {
-                return (new Optimizer(substr($a, 9), $ax))->run();
-            }
-            if (strpos($a, 'install') !== false) {
-                return $this->cmdInstall(substr($a, 7), $ax);
-            }
-            if (strpos($a, 'update') !== false) {
-                return $this->cmdUpdate(substr($a, 6), $ax);
-            }
-            if (strpos($a, 'key:') !== false) {
-                return (new Key(substr($a, 4), $ax))->run();
-            }
-            if (strpos($a, 'make:') !== false) {
-                return (new Make(substr($a, 5), $ax))->run();
-                //return $this->cmdMake(substr($a, 5), $ax);
-            }
+	//CORE Request
+	function request($rqst)
+	{
+		array_shift($rqst);
+		$ax = $rqst;
+		foreach ($rqst as $a) {
+			array_shift($ax);
+			if (strpos($a, '-h') !== false || strpos($a, '?') !== false) {
+				return self::help();
+			}
+			if (strpos($a, 'optimize:') !== false) {
+				return (new Optimizer(substr($a, 9), $ax))->run();
+			}
+			if (strpos($a, 'install') !== false) {
+				return $this->cmdInstall(substr($a, 7), $ax);
+			}
+			if (strpos($a, 'update') !== false) {
+				return $this->cmdUpdate(substr($a, 6), $ax);
+			}
+			if (strpos($a, 'key:') !== false) {
+				return (new Key(substr($a, 4), $ax))->run();
+			}
+			if (strpos($a, 'make:') !== false) {
+				return (new Make(substr($a, 5), $ax))->run();
+				//return $this->cmdMake(substr($a, 5), $ax);
+			}
 
-            //Plugins
-            if (strpos($a, 'table:') !== false) {
-                return (new Plugin\Table(substr($a, 6), $ax))->run();
-            }
-        }
-        //or show help...
-        return self::help();
-    }
+			//Plugins
+			if (strpos($a, 'table:') !== false) {
+				return (new Plugin\Table(substr($a, 6), $ax))->run();
+			}
+		}
+		//or show help...
+		return self::help();
+	}
 
-    /**
-     * It's same as cmdUpdate
-     * @param string $v   segment of command
-     * @param array $arg all others command line argumments
-     *
-     * @return string Display user data
-     */
-    function cmdInstall($v, $arg)
-    {
-        return $this->cmdUpdate($v, $arg);
-    }
+	/**
+	 * It's same as cmdUpdate
+	 * @param string $v   segment of command
+	 * @param array $arg all others command line argumments
+	 *
+	 * @return string Display user data
+	 */
+	function cmdInstall($v, $arg)
+	{
+		return $this->cmdUpdate($v, $arg);
+	}
 
-    /**
-     * Update command
-     * @param string $v   segment of command
-     * @param array $arg all others command line argumments
-     *
-     * @return string Display user data
-     */
+	/**
+	 * Update command
+	 * @param string $v   segment of command
+	 * @param array $arg all others command line argumments
+	 *
+	 * @return string Display user data
+	 */
 
-    function cmdUpdate($v, $arg)
-    {
-        $composer_psr4 = dirname(dirname(dirname(__DIR__))).'/composer/autoload_psr4.php';
-        if (!file_exists($composer_psr4)) {
-            ret("I can't find Composer data!");
-        }
+	function cmdUpdate($v, $arg)
+	{
+		$composer_psr4 = dirname(dirname(dirname(__DIR__))).'/composer/autoload_psr4.php';
+		if (!file_exists($composer_psr4)) {
+			ret("I can't find Composer data!");
+		}
 
-        $composer = require_once $composer_psr4;
-        if (!isset($composer['Config\\'][0])) {
-            ret("I can't find Composer data!");
-        }
+		$composer = require_once $composer_psr4;
+		if (!isset($composer['Config\\'][0])) {
+			ret("I can't find Composer data!");
+		}
 
-        $configDir = $composer['Config\\'][0];
+		$configDir = $composer['Config\\'][0];
 
-        $report = [];
-        $dir = scandir($vendorDir.'/devbr');
-        //varre todos os componentes "DEVBR"
-        foreach ($dir as $componente) {
-            if ($componente == '.' || $componente == '..') {
+		$report = [];
+		$vendors = scandir($vendorDir); //.php/Composer
+
+		foreach($vendors as $vendor){
+            $vendorPath = "$vendorDir/$vendor";
+
+            if ($vendor == '.' || $vendor == '..' || !is_dir($vendorPath)) {
                 continue;
             }
 
-            if (is_dir("$vendorDir/devbr/$componente/Config")) {
-                //Coping all files (and directorys) in /Config
-                $copy = static::copyDirectoryContents("$vendorDir/devbr/$componente/Config", "$configDir", false, $configDir);
-                $report["devbr/$componente"] = $copy;
+            $vendorFiles = scandir($vendorPath); //.php/Composer/devbr
 
-                //Return to application installer
-                echo "\n - Installing ".ucfirst($componente).'...';
+			//varre todos os componentes "DEVBR"
+			foreach ($vendorFiles as $componente) {
+                $componentePath = "$vendorPath/$componente"; //.php/Composer/devbr/html
 
-                if (isset($copy['error']['permission'])) {
-                    echo "\n   Not allowed to copy one or more files\n\n";
-                } else {
-                    echo "\n   ".(isset($copy['error']['overwrite']) ? 'Some configuration files already existed.' : 'Success!')."\n\n";
-                }
-            }
-        }
+				if ($componente == '.' || $componente == '..' || !is_dir($componentePath)) {
+					continue;
+				}
 
-        //Saving a log file
-        file_put_contents("$configDir/install.log.json", json_encode($report, JSON_PRETTY_PRINT));
-    }
+				if (is_dir("$componentePath/Config")) {
+					//Coping all files (and directorys) in /Config
+					$copy = static::copyDirectoryContents("$componentePath/Config", "$configDir", false, $configDir);
+                    $report["$vendor/$componente"] = $copy;
+
+					//Return to application installer
+					echo "\n - Install $vendor/$componente:";
+
+                    //Copied
+                    $copied = count($copy['copied']);
+                    if ($copied > 0) {
+                        echo " $copied file(s) copied.";
+                    }
+                    
+                    //Permissions 
+                    if (isset($copy['error']['permission'])) {
+                        echo " I can't allow to copy one or more files.";
+                    }
+
+                    //Files exists
+                    if (isset($copy['error']['overwrite'])) {
+                        echo ' '.($copied > 0 ? 'Some f':'F').'iles already existed.';                                
+                    }
+				}
+			}
+            echo "\n";
+		}
+		echo "\n";
+
+		//Saving a log file
+		file_put_contents("$configDir/install.log.json", json_encode($report, JSON_PRETTY_PRINT));
+	}
 
 
-    // Checa um diretório e cria se não existe - retorna false se não conseguir ou não existir
-    /**
-     * Check or create a directory
-     * @param  string  $dir    path of the directory
-     * @param  boolean $create False/true for create
-     * @param  string  $perm   indiucates a permission - default 0777
-     *
-     * @return bool          status of directory (exists/created = false or true)
-     */
-    static function checkAndOrCreateDir($dir, $create = false, $perm = 0777)
-    {
-        if (is_dir($dir) && is_writable($dir)) {
-            return true;
-        } elseif ($create === false) {
-            return false;
-        }
+	// Checa um diretório e cria se não existe - retorna false se não conseguir ou não existir
+	/**
+	 * Check or create a directory
+	 * @param  string  $dir    path of the directory
+	 * @param  boolean $create False/true for create
+	 * @param  string  $perm   indiucates a permission - default 0777
+	 *
+	 * @return bool          status of directory (exists/created = false or true)
+	 */
+	static function checkAndOrCreateDir($dir, $create = false, $perm = 0777)
+	{
+		if (is_dir($dir) && is_writable($dir)) {
+			return true;
+		} elseif ($create === false) {
+			return false;
+		}
 
-        @mkdir($dir, $perm, true);
-        @chmod($dir, $perm);
+		@mkdir($dir, $perm, true);
+		@chmod($dir, $perm);
 
-        if (!is_writable($dir)) {
-            return false;
-        }
-        
-        return true;
-    }
+		if (!is_writable($dir)) {
+			return false;
+		}
+		
+		return true;
+	}
 
-    /**
-     * Copy entire content of the $dir[ectory]
-     * @param  string $dir    Origin
-     * @param  string $target Destination
-     * @return bool         True/false success
-     */
-    static function copyDirectoryContents($dir, $target, $overwrite = true, $base = '')
-    {
-        $dir = rtrim($dir, "\\/ ").'/';
-        $target = rtrim($target, "\\/ ").'/';
-        $report = ['error'=>[],'copied'=>[]];
+	/**
+	 * Copy entire content of the $dir[ectory]
+	 * @param  string $dir    Origin
+	 * @param  string $target Destination
+	 * @return bool         True/false success
+	 */
+	static function copyDirectoryContents($dir, $target, $overwrite = true, $base = '')
+	{
+		$dir = rtrim($dir, "\\/ ").'/';
+		$target = rtrim($target, "\\/ ").'/';
+		$report = ['error'=>[],'copied'=>[]];
 
-        if (!static::checkAndOrCreateDir($target, true, 0777)) {
-            $report['error']['permission'] = $taget;
-            return $report;
-        }
+		if (!static::checkAndOrCreateDir($target, true, 0777)) {
+			$report['error']['permission'] = $taget;
+			return $report;
+		}
 
-        foreach (scandir($dir) as $file) {
-            if ($file == '.' || $file == '..') {
-                continue;
-            }
+		foreach (scandir($dir) as $file) {
+			if ($file == '.' || $file == '..') {
+				continue;
+			}
 
-            if (is_dir($dir.$file)) {
-                if (!static::checkAndOrCreateDir($target.$file, true, 0777)) {
-                    $report['error']['permission'] = $taget.$file;
-                    return $report;
-                } else {
-                    $copy = static::copyDirectoryContents($dir.$file, $target.$file, $overwrite, $base);
-                    $report = array_merge_recursive($report, $copy);
-                }
-            } elseif (is_file($dir.$file)) {
-                if ($overwrite === false && file_exists($target.$file)) {
-                    $report['error']['overwrite'][] = str_replace($base.'/', '', $target.$file);
-                    continue;
-                }
-                if (!copy($dir.$file, $target.$file)) {
-                    $report['error']['permission'] = $target.$file;
-                    return $report;
-                } else {
-                    $report['copied'][] = str_replace($base.'/', '', $target.$file);
-                }
-            }
-        }
-        return $report;
-    }
-    
-    /**
-     * Remove Directory 
-     * 
-     * @param  string $src pack of directory to remove
-     * 
-     * @return void        void
-     */
-    static private function removeDirectory($src) 
-    {
-        $dir = opendir($src);
-        while(false !== ( $file = readdir($dir)) ) {
-            if ($file != '.' && $file != '..') {
-                $full = $src . '/' . $file;
+			if (is_dir($dir.$file)) {
+				if (!static::checkAndOrCreateDir($target.$file, true, 0777)) {
+					$report['error']['permission'] = $taget.$file;
+					return $report;
+				} else {
+					$copy = static::copyDirectoryContents($dir.$file, $target.$file, $overwrite, $base);
+					$report = array_merge_recursive($report, $copy);
+				}
+			} elseif (is_file($dir.$file)) {
+				if ($overwrite === false && file_exists($target.$file)) {
+					$report['error']['overwrite'][] = str_replace($base.'/', '', $target.$file);
+					continue;
+				}
+				if (!copy($dir.$file, $target.$file)) {
+					$report['error']['permission'] = $target.$file;
+					return $report;
+				} else {
+					$report['copied'][] = str_replace($base.'/', '', $target.$file);
+				}
+			}
+		}
+		return $report;
+	}
+	
+	/**
+	 * Remove Directory 
+	 * 
+	 * @param  string $src pack of directory to remove
+	 * 
+	 * @return void        void
+	 */
+	static private function removeDirectory($src) 
+	{
+		$dir = opendir($src);
+		while(false !== ( $file = readdir($dir)) ) {
+			if ($file != '.' && $file != '..') {
+				$full = $src . '/' . $file;
 
-                if ( is_dir($full) ) {
-                    self::removeDirectory($full);
-                } else {
-                    unlink($full);
-                }
-            }
-        }
-        closedir($dir);
-        rmdir($src);
-    }
+				if ( is_dir($full) ) {
+					self::removeDirectory($full);
+				} else {
+					unlink($full);
+    			}
+			}
+		}
+		closedir($dir);
+		rmdir($src);
+	}
 
-    /**
-     * return a help information text
-     *
-     * @return string a help text...
-     */
-    static function help()
-    {
-        return '
+	/**
+	 * return a help information text
+	 *
+	 * @return string a help text...
+	 */
+	static function help()
+	{
+		return '
+  Usage: php index.php [command:type] [options]
 
-      Usage: php index.php [command:type] [options]
+  key:generate                        Generate new keys
+  key:list                            List all installed Cyphers
 
-      key:generate              Generate new keys
-      key:list                  List all installed Cyphers
+  make:controller <namespace/name>    Create a controller
+  make:model <namespace/name>         Create a model
+  make:html <namespace/name>          Create a html
 
-      make:controller <name>    Create a controller with <name>
-      make:model <name>         Create a model with <name>
-      make:html <name>          Create a html file with <name>
+  optimize:scan [save name]           Scan CSS&JS source files 
+                                      Optional indicates "save" and a "name" 
+                                      for save in config file the scan
 
-      optimize:scan [save name] Scan CSS&JS source files 
-                                Optional indicates "save" and a 
-                                "name" for save in config file the scan
+  optimize:css                        Optimize CSS configurated files
+  optimize:js                         Optimize JS configurated files
+  optimize:all                        Optimize ALL configurated files
 
-      optimize:css              Optimize CSS configurated files
-      optimize:js               Optimize JS configurated files
-      optimize:all              Optimize ALL configurated files
-
-      -h or ?                   Show this help
-      ';
-    }
+  -h or ?                             Show this help
+        ';
+	}
 }
