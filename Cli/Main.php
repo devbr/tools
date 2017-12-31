@@ -222,7 +222,7 @@ class Main
     	}
     	static::$configDir = _CONFIGPATH;
     	static::$vendorDir = $vendorDir;
-    	static::$baseDir = $baseDir;
+    	static::$baseDir = defined('_PHPPATH') ? _PHPPATH : dirname($vendorDir);
 	}
 
 
