@@ -115,10 +115,10 @@ class Main
 	function cmdUpdate($v, $arg)
 	{
 		$report = [];
-		$vendors = scandir(self::vendorDir); //.php/Composer
+		$vendors = scandir(self::$vendorDir); //.php/Composer
 
 		foreach($vendors as $vendor){
-            		$vendorPath = self::vendorDir.'/'.$vendor;
+            		$vendorPath = self::$vendorDir.'/'.$vendor;
 
             		if ($vendor == '.' || $vendor == '..' || !is_dir($vendorPath)) {
                 		continue;
@@ -136,7 +136,7 @@ class Main
 
 				if (is_dir("$componentePath/Config")) {
 					//Coping all files (and directorys) in /Config
-					$copy = static::copyDirectoryContents("$componentePath/Config", self::configDir, false, self::configDir);
+					$copy = static::copyDirectoryContents("$componentePath/Config", self::$configDir, false, self::$configDir);
                     			$report["$vendor/$componente"] = $copy;
 
 					//Return to application installer
@@ -163,7 +163,7 @@ class Main
 		}
 
 		//Saving a log file
-		file_put_contents(self::configDir.'/install.log.json', json_encode($report, JSON_PRETTY_PRINT));
+		file_put_contents(self::$configDir.'/install.log.json', json_encode($report, JSON_PRETTY_PRINT));
 	}
 
 
@@ -173,7 +173,7 @@ class Main
 	 */
 	static function getConfigDir()
 	{
-		return static::configDir;
+		return static::$configDir;
 	}
 
 
@@ -183,7 +183,7 @@ class Main
 	 */
 	static function getVendorDir()
 	{
-		return static::vendorDir;
+		return static::$vendorDir;
 	}
 
 
@@ -193,7 +193,7 @@ class Main
 	 */
 	static function getBaseDir()
 	{
-		return static::baseDir;
+		return static::$baseDir;
 	}
 
 
@@ -220,9 +220,9 @@ class Main
 		       ? $composer[''][0].'/Config' 
 		       : dirname($vendorDir).'/Config');
     	}
-    	static::configDir = _CONFIGPATH;
-    	static::vendorDir = $vendorDir;
-    	static::baseDir = $baseDir;
+    	static::$configDir = _CONFIGPATH;
+    	static::$vendorDir = $vendorDir;
+    	static::$baseDir = $baseDir;
 	}
 
 
