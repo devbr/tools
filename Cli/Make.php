@@ -42,7 +42,7 @@ class Make
     
         $this->cmd = strtolower($cmd);
         $this->arg = $arg;
-        $this->configTemplate = Main::getConfigDir().'/Cli/Template/';
+        $this->configTemplate = Main::getConfigDir().'/Devbr/Cli/Template/';
         $this->phpRoot = Main::getBaseDir();
     }
 
