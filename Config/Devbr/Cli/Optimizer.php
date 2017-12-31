@@ -12,7 +12,7 @@
  * @link      http://dbrasil.tk/devbr
  */
 
-namespace Config\Cli;
+namespace Config\Devbr\Cli;
 
 /**
  * Optimizer Config Class
@@ -44,7 +44,7 @@ class Optimizer
         }
         if ($file == false) {
             $file = static::$configFile = substr_replace(__FILE__, '.json', '-4');
-            $this->baseDir = \App::Web();
+            $this->baseDir = defined('_WWWPATH') ? _WWWPATH : dirname(Devbr\Cli\Main::getBaseDir());
         }
 
         if (!file_exists($file)) {

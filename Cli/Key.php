@@ -43,7 +43,7 @@ class Key
     
         $this->cmd = strtolower($cmd);
         $this->arg = $arg;
-        $this->configKeyPath = \App::Config().'Key/';
+        $this->configKeyPath = Main::getConfigDir().'/Devbr/Key/';
     }
 
     /**
@@ -79,7 +79,7 @@ class Key
     {
         //check if path exists
         if (!is_dir($this->configKeyPath)) {
-            Main::copyDirectoryContents(dirname(__DIR__).'/Config/Key', $this->configKeyPath);
+            Main::copyDirectoryContents(dirname(__DIR__).'/Config/Devbr/Key', $this->configKeyPath);
         }
         //Now, OPEN_SSL
         $this->createKeys();

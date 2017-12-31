@@ -42,8 +42,8 @@ class Make
     
         $this->cmd = strtolower($cmd);
         $this->arg = $arg;
-        $this->configTemplate = \App::Config().'Cli/Template/';
-        $this->phpRoot = \App::Php();
+        $this->configTemplate = Main::getConfigDir().'/Cli/Template/';
+        $this->phpRoot = Main::getBaseDir();
     }
 
     /**
@@ -83,10 +83,10 @@ class Make
     ) {
     
         //$name = $type == 'html'?strtolower($name):$name;
-        $path = $this->phpRoot.ucfirst($type).'/';
+        $path = $this->phpRoot.'/'.ucfirst($type).'/';
         $ext = $type == 'html'?'.html':'.php';
 
-        $fileName = $this->phpRoot.$name.$ext;
+        $fileName = $this->phpRoot.'/'.$name.$ext;
 
         if (file_exists($fileName)) {
             return "\n\n  WARNNING: this file already exists!\n  ".$fileName."\n\n";
@@ -98,7 +98,7 @@ class Make
         }
 
         //get template
-        $file = file_get_contents($this->configTemplate.$type.'.tpl');
+        $file = file_get_contents($this->configTemplate.'/'.$type.'.tpl');
 
         //replace %namespace% and %name%
         $file = str_replace('%name%', ucfirst(basename($name)), $file);

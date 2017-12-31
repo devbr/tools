@@ -27,6 +27,10 @@ class Main
 {
 
 	private $timer = 0;
+	private static $configDir = '';
+	private static $vendorDir = '';
+	private static $baseDir = '';
+
 
 	/**
 	 * Constructor
@@ -42,6 +46,9 @@ class Main
 
 		//Constants:
 		$this->timer = microtime(true);
+
+		//Configurations
+		$this->setup();
 
 		//Command line settings...
 		echo $this->request($argv);
@@ -107,29 +114,11 @@ class Main
 
 	function cmdUpdate($v, $arg)
 	{
-		$composer_psr4 = dirname(dirname(dirname(__DIR__))).'/composer/autoload_psr4.php';
-		if (!file_exists($composer_psr4)) {
-			ret("I can't find Composer data!");
-		}
-
-		$composer = require_once $composer_psr4;
-		if (!isset($composer['Config\\'][0])) {
-			ret("I can't find Composer data!");
-		}
-
-		//APP_CONFIGPATH defined in "index.php" or in bootstrape
-        	if(!defined('APP_CONFIGPATH')){
-          		define('APP_CONFIGPATH', isset($composer[''][0]) //Composer fallBack
-			       ? $composer[''][0].'/Config' 
-			       : dirname($vendorDir).'/Config');
-        	}
-        	$configDir = APP_CONFIGPATH;
-
 		$report = [];
-		$vendors = scandir($vendorDir); //.php/Composer
+		$vendors = scandir(self::vendorDir); //.php/Composer
 
 		foreach($vendors as $vendor){
-            		$vendorPath = "$vendorDir/$vendor";
+            		$vendorPath = self::vendorDir.'/'.$vendor;
 
             		if ($vendor == '.' || $vendor == '..' || !is_dir($vendorPath)) {
                 		continue;
@@ -147,7 +136,7 @@ class Main
 
 				if (is_dir("$componentePath/Config")) {
 					//Coping all files (and directorys) in /Config
-					$copy = static::copyDirectoryContents("$componentePath/Config", "$configDir", false, $configDir);
+					$copy = static::copyDirectoryContents("$componentePath/Config", self::configDir, false, self::configDir);
                     			$report["$vendor/$componente"] = $copy;
 
 					//Return to application installer
@@ -174,7 +163,66 @@ class Main
 		}
 
 		//Saving a log file
-		file_put_contents("$configDir/install.log.json", json_encode($report, JSON_PRETTY_PRINT));
+		file_put_contents(self::configDir.'/install.log.json', json_encode($report, JSON_PRETTY_PRINT));
+	}
+
+
+	/**
+	 * 	
+	 * @return [type] [description]
+	 */
+	static function getConfigDir()
+	{
+		return static::configDir
+	}
+
+
+	/**
+	 * 	
+	 * @return [type] [description]
+	 */
+	static function getVendorDir()
+	{
+		return static::vendorDir
+	}
+
+
+	/**
+	 * [getBaseDir description]
+	 * @return [type] [description]
+	 */
+	static function getBaseDir()
+	{
+		return static::baseDir
+	}
+
+
+
+	/**
+	 * [setup description]
+	 * @return [type] [description]
+	 */
+	private function setup()
+	{
+		$composer_psr4 = dirname(dirname(dirname(__DIR__))).'/composer/autoload_psr4.php';
+		if (!file_exists($composer_psr4)) {
+			exit("\nI can't find Composer data!");
+		}
+
+		$composer = require_once $composer_psr4;
+		if (!isset($composer['Config\\'][0])) {
+			exit("\nI can't find Composer data!");
+		}
+
+		//APP_CONFIGPATH defined in "index.php" or in bootstrape
+    	if(!defined('_CONFIGPATH')){
+      		define('_CONFIGPATH', isset($composer[''][0]) //Composer fallBack
+		       ? $composer[''][0].'/Config' 
+		       : dirname($vendorDir).'/Config');
+    	}
+    	static::configDir = _CONFIGPATH;
+    	static::vendorDir = $vendorDir;
+    	static::baseDir = $baseDir;
 	}
 
 

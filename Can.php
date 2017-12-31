@@ -1,6 +1,6 @@
 <?php
 /**
- * Devbr\App
+ * Devbr\Tools
  * PHP version 7
  *
  * @category  Tools
@@ -87,8 +87,8 @@ class Can
         }
 
         //get "base" key OR use default
-        if (file_exists(\App::Config().'Key/can.key')) {
-            $base = file_get_contents(\App::Config().'/Key/can.key');
+        if (defined('_CONFIGPATH') && file_exists(_CONFIGPATH.'/Devbr/Key/can.key')) {
+            $base = file_get_contents(_CONFIGPATH.'/Devbr/Key/can.key');
             static::$base = [];
             static::$extra_base = [];
             $base = explode("\n", $base);

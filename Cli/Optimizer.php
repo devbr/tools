@@ -14,7 +14,7 @@
 
 namespace Devbr\Cli;
 
-use Config\Cli;
+use Config\Devbr\Cli;
 
 /**
  * Devbr\Cli\Optimizer Class
