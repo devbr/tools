@@ -173,7 +173,7 @@ class Main
 	 */
 	static function getConfigDir()
 	{
-		return static::configDir
+		return static::configDir;
 	}
 
 
@@ -183,7 +183,7 @@ class Main
 	 */
 	static function getVendorDir()
 	{
-		return static::vendorDir
+		return static::vendorDir;
 	}
 
 
@@ -193,7 +193,7 @@ class Main
 	 */
 	static function getBaseDir()
 	{
-		return static::baseDir
+		return static::baseDir;
 	}
 
 
