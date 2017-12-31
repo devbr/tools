@@ -14,7 +14,7 @@
 
 namespace Devbr\Cli;
 
-use Config\Devbr\Cli;
+use Config\Devbr\Cli as Config;
 
 /**
  * Devbr\Cli\Optimizer Class
@@ -44,7 +44,7 @@ class Optimizer
         $arg = null
     ) {
     
-        $this->config = Cli\Optimizer::this();
+        $this->config = Config\Optimizer::this();
         $this->cmd = strtolower($cmd);
         $this->arg = $arg;
         $this->yuicompressor = __DIR__.'/yc.jar';
