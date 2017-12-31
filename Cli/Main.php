@@ -117,23 +117,29 @@ class Main
 			ret("I can't find Composer data!");
 		}
 
-		$configDir = $composer['Config\\'][0];
+		//APP_CONFIGPATH defined in "index.php" or in bootstrape
+        	if(!defined('APP_CONFIGPATH')){
+          		define('APP_CONFIGPATH', isset($composer[''][0]) //Composer fallBack
+			       ? $composer[''][0].'/Config' 
+			       : dirname($vendorDir).'/Config');
+        	}
+        	$configDir = APP_CONFIGPATH;
 
 		$report = [];
 		$vendors = scandir($vendorDir); //.php/Composer
 
 		foreach($vendors as $vendor){
-            $vendorPath = "$vendorDir/$vendor";
+            		$vendorPath = "$vendorDir/$vendor";
 
-            if ($vendor == '.' || $vendor == '..' || !is_dir($vendorPath)) {
-                continue;
-            }
+            		if ($vendor == '.' || $vendor == '..' || !is_dir($vendorPath)) {
+                		continue;
+            		}
 
-            $vendorFiles = scandir($vendorPath); //.php/Composer/devbr
+            		$vendorFiles = scandir($vendorPath); //.php/Composer/devbr
 
 			//varre todos os componentes "DEVBR"
 			foreach ($vendorFiles as $componente) {
-                $componentePath = "$vendorPath/$componente"; //.php/Composer/devbr/html
+                		$componentePath = "$vendorPath/$componente"; //.php/Composer/devbr/html
 
 				if ($componente == '.' || $componente == '..' || !is_dir($componentePath)) {
 					continue;
@@ -142,26 +148,26 @@ class Main
 				if (is_dir("$componentePath/Config")) {
 					//Coping all files (and directorys) in /Config
 					$copy = static::copyDirectoryContents("$componentePath/Config", "$configDir", false, $configDir);
-                    $report["$vendor/$componente"] = $copy;
+                    			$report["$vendor/$componente"] = $copy;
 
 					//Return to application installer
 					echo "\n - Install $vendor/$componente:";
 
-                    //Copied
-                    $copied = count($copy['copied']);
-                    if ($copied > 0) {
-                        echo " $copied file(s) copied.";
-                    }
+                    			//Copied
+                    			$copied = count($copy['copied']);
+                    			if ($copied > 0) {
+                        			echo " $copied file(s) copied.";
+                    			}
                     
-                    //Permissions 
-                    if (isset($copy['error']['permission'])) {
-                        echo " I can't allow to copy one or more files.";
-                    }
+                    			//Permissions 
+                    			if (isset($copy['error']['permission'])) {
+                        			echo " I can't allow to copy one or more files.";
+                    			}
 
-                    //Files exists
-                    if (isset($copy['error']['overwrite'])) {
-                        echo ' '.($copied > 0 ? 'Some f':'F').'iles already existed.';                                
-                    }
+                    			//Files exists
+                    			if (isset($copy['error']['overwrite'])) {
+                        			echo ' '.($copied > 0 ? 'Some f':'F').'iles already existed.';                                
+                    			}
 				}
 			}
             echo "\n";
