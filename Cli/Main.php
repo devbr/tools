@@ -163,7 +163,7 @@ class Main
 		}
 
 		//Saving a log file
-		file_put_contents(self::$configDir.'/install.log.json', json_encode($report, JSON_PRETTY_PRINT));
+		file_put_contents(self::$configDir.'/Devbr/install.log.json', json_encode($report, JSON_PRETTY_PRINT));
 	}
 
 
