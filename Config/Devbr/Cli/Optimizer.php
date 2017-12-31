@@ -44,7 +44,7 @@ class Optimizer
         }
         if ($file == false) {
             $file = static::$configFile = substr_replace(__FILE__, '.json', '-4');
-            $this->baseDir = defined('_WWWPATH') ? _WWWPATH : dirname(Devbr\Cli\Main::getBaseDir());
+            $this->baseDir = defined('_WWWPATH') ? _WWWPATH : dirname(\Devbr\Cli\Main::getBaseDir());
         }
 
         if (!file_exists($file)) {
