@@ -59,7 +59,6 @@ class Main
 	//CORE Request
 	function request($rqst)
 	{
-		array_shift($rqst);
 		$ax = $rqst;
 		foreach ($rqst as $a) {
 			array_shift($ax);
@@ -163,7 +162,7 @@ class Main
 		}
 
 		//Saving a log file
-		file_put_contents(self::$configDir.'/Devbr/install.log.json', json_encode($report, JSON_PRETTY_PRINT));
+		file_put_contents(self::$configDir.'/install.log.json', json_encode($report, JSON_PRETTY_PRINT));
 	}
 
 
@@ -340,10 +339,6 @@ class Main
   make:controller <namespace/name>    Create a controller
   make:model <namespace/name>         Create a model
   make:html <namespace/name>          Create a html
-
-  optimize:scan [save name]           Scan CSS&JS source files 
-                                      Optional indicates "save" and a "name" 
-                                      for save in config file the scan
 
   optimize:css                        Optimize CSS configurated files
   optimize:js                         Optimize JS configurated files
