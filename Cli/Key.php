@@ -94,15 +94,34 @@ class Key
      */
     private function cmdList()
     {
-        $o = "\n\n  Ciphers:";
-        foreach (mcrypt_list_algorithms() as $x) {
-            $o .= "\n\t".$x;
+        
+
+
+        $a = array_diff(openssl_get_md_methods(true), openssl_get_md_methods());
+
+        $b = array_diff(openssl_get_cipher_methods(true), openssl_get_cipher_methods());
+        $b = array_filter($b,function($c) { return stripos($c,"des")===FALSE; } );
+        $b = array_filter($b,function($c) { return stripos($c,"rc2")===FALSE; } );
+
+        sort($a);
+        sort($b);
+
+        if(count($a) > count($b)){
+            $x = $a;
+            $y = $b;
+        } else {
+            $x = $b;
+            $y = $a;
         }
-        $o .= "\n\n  Cipher Modes:";
-        foreach (mcrypt_list_modes() as $x) {
-            $o .= "\n\t".$x;
+
+        $o = "\n\n\t".str_pad('Ciphers', 30, ' ', STR_PAD_RIGHT)."|  Modes\n";
+        $o .= "\t".str_pad('-------', 30, '-', STR_PAD_RIGHT)."|-----------------\n";
+
+        for($i = 0; count($x) > $i; $i ++) {
+            $o .= "\t".str_pad($x[$i],30,' ',STR_PAD_RIGHT)."|  ".
+                  (isset($y[$i])?$y[$i]:'-')."\n";
         }
-        return $o;
+        return $o."\n\n";
     }
 
     /**
