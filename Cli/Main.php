@@ -59,6 +59,7 @@ class Main
 	//CORE Request
 	function request($rqst)
 	{
+		$rqst = is_array($rqst) ? $rqst : [];
 		$ax = $rqst;
 		foreach ($rqst as $a) {
 			array_shift($ax);
