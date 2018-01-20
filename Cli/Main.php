@@ -39,7 +39,7 @@ class Main
 	 */
 	function __construct($argv)
 	{
-		echo "  Command Line Tool!\n";
+		echo "\n\n  Command Line Tool!\n";
 		if (php_sapi_name() !== 'cli') {
             exit('It\'s no cli!');
 		}
@@ -53,7 +53,7 @@ class Main
 		//Command line settings...
 		echo $this->request($argv);
 
-		exit("\n  Finished in ".number_format((microtime(true)-$this->timer)*1000, 3)." ms.\n");
+		exit("\n  Finished in ".number_format((microtime(true)-$this->timer)*1000, 3)." ms.\n\n\n");
 	}
 
 	//CORE Request
